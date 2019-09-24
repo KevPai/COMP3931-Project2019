@@ -15,38 +15,34 @@ namespace Wave_Project
         public Form1()
         {
             InitializeComponent();
+         
+            //Axis and Title
+            formsPlot1.plt.Title("Wave Analyzer");
+            formsPlot1.plt.XLabel("Time");
+            formsPlot1.plt.YLabel("Frequency");
+
+            //Generates sample waves
+            int pointCount = 50;
+            double[] dataXs = ScottPlot.DataGen.Consecutive(pointCount);
+            double[] dataSin = ScottPlot.DataGen.Sin(pointCount);
+            double[] dataCos = ScottPlot.DataGen.Cos(pointCount);
+
+            formsPlot1.plt.PlotScatter(dataXs, dataSin);
+            formsPlot1.plt.PlotScatter(dataXs, dataCos);
+
+            //Attributes of horizontal and vertical lines
+            formsPlot1.plt.PlotVLine(0, color: Color.Black, lineWidth: 3);
+            formsPlot1.plt.PlotHLine(0, color: Color.Black, lineWidth: 3);
+
+            //Save your graph to an image
+            formsPlot1.plt.SaveFig("Wave.png");
+
+            formsPlot1.Render();
         }
 
         private void Button1_Click(object sender, EventArgs e)
         {
-            Graphics g = this.CreateGraphics();
 
-            Pen pen = new Pen(Brushes.Black, 7.0F);
-
-            float x1 = 0;
-            float y1 = 0;
-
-            float y2 = 0;
-
-            float yEx = 100;
-            float eF = 40;
-
-            for (float x = 0; x < 20; x += 0.1F)
-            {
-                y2 = (float)Math.Sin(x);
-
-                g.DrawLine(pen, x1 * eF, y1 * eF + yEx, x * eF, y2 * eF + yEx);
-
-                x1 = x;
-                y1 = y2;
-            }
-        }
-
-        private void Button2_Click(object sender, EventArgs e)
-        {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
         }
     }
 }
