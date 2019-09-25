@@ -15,20 +15,18 @@ using System.Windows.Shapes;
 
 namespace PanZoomingCanvas
 {
-    /// <summary>
-    /// Logique d'interaction pour MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         private Point _pointOnClick; // Click Position for panning
         private ScaleTransform _scaleTransform;
         private TranslateTransform _translateTransform;
         private TransformGroup _transformGroup;
-        private readonly double maxScale = 0.2;
+        private readonly double maxScale = 0.5;
 
         public MainWindow()
         {
             InitializeComponent();
+
             _translateTransform = new TranslateTransform();
             _scaleTransform = new ScaleTransform();
             _transformGroup = new TransformGroup();
@@ -69,7 +67,6 @@ namespace PanZoomingCanvas
 
         private void MainCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            //Point de la souris
             Point mousePosition = e.GetPosition(MainCanvas);
             //Actual Zoom
             double zoomNow = Math.Round(MainCanvas.RenderTransform.Value.M11, 1);
@@ -77,11 +74,9 @@ namespace PanZoomingCanvas
             double zoomScale = 0.1;
             //Positive or negative zoom
             double valZoom = e.Delta > 0 ? zoomScale : -zoomScale;
-            //Point de la souris pour le panning et zoom/dezoom
             Point pointOnMove = e.GetPosition((FrameworkElement)MainCanvas.Parent);
             //RenderTransformOrigin (doesn't fully working)
             MainCanvas.RenderTransformOrigin = new Point(mousePosition.X / MainCanvas.ActualWidth, mousePosition.Y / MainCanvas.ActualHeight);
-            //Appel du zoom
             Zoom(new Point(mousePosition.X, mousePosition.Y), zoomNow + valZoom);
         }
 
@@ -92,16 +87,16 @@ namespace PanZoomingCanvas
             {
                 _scaleTransform.ScaleX = maxScale;
                 _scaleTransform.ScaleY = maxScale;
-            } else
+            }
+            else
             {
                 _scaleTransform.ScaleX = scale;
                 _scaleTransform.ScaleY = scale;
             }
 
-            //Calcul des centres selon la position de la souris
             double centerX = (point.X - _translateTransform.X) / _scaleTransform.ScaleX;
             double centerY = (point.Y - _translateTransform.Y) / _scaleTransform.ScaleY;
-            //Retablissement du translate pour éviter un décalage
+
             _translateTransform.X = point.X - centerX * _scaleTransform.ScaleX;
             _translateTransform.Y = point.Y - centerY * _scaleTransform.ScaleY;
         }

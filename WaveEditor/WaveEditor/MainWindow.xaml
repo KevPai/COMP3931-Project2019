@@ -12,7 +12,11 @@
         Margin="-4503,-4715,-4503.667,-4714.333" 
         MouseLeftButtonUp="MainCanvas_MouseLeftButtonUp" 
         RenderTransformOrigin="0,0" 
-        Width="10000" Height="10000" VerticalAlignment="Top" >
+        Height="6000"
+        Width="10000" 
+        VerticalAlignment="Center" 
+        HorizontalAlignment="Center">
+
         <Grid.Background>
             <VisualBrush TileMode="FlipXY"
                 Viewport="0,0,25,25" ViewportUnits="Absolute" 
@@ -26,5 +30,10 @@
                 </VisualBrush.Visual>
             </VisualBrush>
         </Grid.Background>
+
+        <Line Grid.Row="1" X1="0" Y1="0" X2="1"  Y2="0" 
+              Stroke="Red" StrokeThickness="8" Stretch="Uniform"></Line>
+        <Line Grid.Row="1" X1="0" Y1="0" X2="0"  Y2="1" 
+              Stroke="Red" StrokeThickness="8" Stretch="Uniform"></Line>
     </Grid>
 </Window>
