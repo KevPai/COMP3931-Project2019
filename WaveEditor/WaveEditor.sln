@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29230.47
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WaveEditor", "WaveEditor\WaveEditor.csproj", "{74BFF8A3-D65A-4E84-AFE3-7C2989364611}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{74BFF8A3-D65A-4E84-AFE3-7C2989364611}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74BFF8A3-D65A-4E84-AFE3-7C2989364611}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74BFF8A3-D65A-4E84-AFE3-7C2989364611}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74BFF8A3-D65A-4E84-AFE3-7C2989364611}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FE887A5C-F377-467C-9FB3-12DDAF750DF9}
+	EndGlobalSection
+EndGlobal
