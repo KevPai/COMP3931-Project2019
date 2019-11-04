@@ -8,13 +8,3 @@ C:\Users\haoju\Desktop\digital image & audio processing\waveEditerVersion1\obj\D
 C:\Users\haoju\Desktop\digital image & audio processing\waveEditerVersion1\obj\Debug\waveEditerVersion1.csproj.CoreCompileInputs.cache
 C:\Users\haoju\Desktop\digital image & audio processing\waveEditerVersion1\obj\Debug\waveEditerVersion1.exe
 C:\Users\haoju\Desktop\digital image & audio processing\waveEditerVersion1\obj\Debug\waveEditerVersion1.pdb
-C:\Users\haoju\Desktop\digital image & audio processing\wave editer\COMP3931-Project2019\bin\Debug\waveEditerVersion1.exe.config
-C:\Users\haoju\Desktop\digital image & audio processing\wave editer\COMP3931-Project2019\bin\Debug\waveEditerVersion1.exe
-C:\Users\haoju\Desktop\digital image & audio processing\wave editer\COMP3931-Project2019\bin\Debug\waveEditerVersion1.pdb
-C:\Users\haoju\Desktop\digital image & audio processing\wave editer\COMP3931-Project2019\obj\Debug\waveEditerVersion1.csprojAssemblyReference.cache
-C:\Users\haoju\Desktop\digital image & audio processing\wave editer\COMP3931-Project2019\obj\Debug\waveEditerVersion1.Form1.resources
-C:\Users\haoju\Desktop\digital image & audio processing\wave editer\COMP3931-Project2019\obj\Debug\waveEditerVersion1.Properties.Resources.resources
-C:\Users\haoju\Desktop\digital image & audio processing\wave editer\COMP3931-Project2019\obj\Debug\waveEditerVersion1.csproj.GenerateResource.cache
-C:\Users\haoju\Desktop\digital image & audio processing\wave editer\COMP3931-Project2019\obj\Debug\waveEditerVersion1.csproj.CoreCompileInputs.cache
-C:\Users\haoju\Desktop\digital image & audio processing\wave editer\COMP3931-Project2019\obj\Debug\waveEditerVersion1.exe
-C:\Users\haoju\Desktop\digital image & audio processing\wave editer\COMP3931-Project2019\obj\Debug\waveEditerVersion1.pdb

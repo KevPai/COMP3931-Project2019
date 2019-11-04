@@ -54,7 +54,7 @@ namespace waveEditerVersion1
             this.recordStart = new System.Windows.Forms.Button();
             this.volume = new System.Windows.Forms.Button();
             this.volumeValue = new System.Windows.Forms.TextBox();
-            this.playSignal = new System.Windows.Forms.Button();
+            this.PlayWav = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.waveChart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.frequencyChart)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -74,7 +74,7 @@ namespace waveEditerVersion1
             series1.Legend = "Legend1";
             series1.Name = "waveSeries";
             this.waveChart.Series.Add(series1);
-            this.waveChart.Size = new System.Drawing.Size(1572, 302);
+            this.waveChart.Size = new System.Drawing.Size(1572, 328);
             this.waveChart.TabIndex = 0;
             this.waveChart.Text = "waveChart";
             // 
@@ -120,7 +120,7 @@ namespace waveEditerVersion1
             this.frequencyChart.ChartAreas.Add(chartArea2);
             legend2.Name = "Legend1";
             this.frequencyChart.Legends.Add(legend2);
-            this.frequencyChart.Location = new System.Drawing.Point(95, 393);
+            this.frequencyChart.Location = new System.Drawing.Point(95, 406);
             this.frequencyChart.Name = "frequencyChart";
             series2.ChartArea = "ChartArea1";
             series2.Legend = "Legend1";
@@ -190,7 +190,7 @@ namespace waveEditerVersion1
             this.RecordGroup.Controls.Add(this.RecordPlay);
             this.RecordGroup.Controls.Add(this.RecordStop);
             this.RecordGroup.Controls.Add(this.recordStart);
-            this.RecordGroup.Location = new System.Drawing.Point(1388, 491);
+            this.RecordGroup.Location = new System.Drawing.Point(1388, 504);
             this.RecordGroup.Name = "RecordGroup";
             this.RecordGroup.Size = new System.Drawing.Size(192, 212);
             this.RecordGroup.TabIndex = 8;
@@ -230,7 +230,7 @@ namespace waveEditerVersion1
             // 
             // volume
             // 
-            this.volume.Location = new System.Drawing.Point(1395, 441);
+            this.volume.Location = new System.Drawing.Point(1395, 454);
             this.volume.Name = "volume";
             this.volume.Size = new System.Drawing.Size(135, 44);
             this.volume.TabIndex = 9;
@@ -240,28 +240,28 @@ namespace waveEditerVersion1
             // 
             // volumeValue
             // 
-            this.volumeValue.Location = new System.Drawing.Point(1536, 448);
+            this.volumeValue.Location = new System.Drawing.Point(1536, 461);
             this.volumeValue.Name = "volumeValue";
             this.volumeValue.Size = new System.Drawing.Size(100, 31);
             this.volumeValue.TabIndex = 10;
             this.volumeValue.Text = "100";
             // 
-            // playSignal
+            // PlayWav
             // 
-            this.playSignal.Location = new System.Drawing.Point(1418, 294);
-            this.playSignal.Name = "playSignal";
-            this.playSignal.Size = new System.Drawing.Size(229, 46);
-            this.playSignal.TabIndex = 11;
-            this.playSignal.Text = "Play";
-            this.playSignal.UseVisualStyleBackColor = true;
-            this.playSignal.Click += new System.EventHandler(this.PlaySignal_Click);
+            this.PlayWav.Location = new System.Drawing.Point(1418, 302);
+            this.PlayWav.Name = "PlayWav";
+            this.PlayWav.Size = new System.Drawing.Size(229, 46);
+            this.PlayWav.TabIndex = 11;
+            this.PlayWav.Text = "Play";
+            this.PlayWav.UseVisualStyleBackColor = true;
+            this.PlayWav.Click += new System.EventHandler(this.Button4_Click_4);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1698, 749);
-            this.Controls.Add(this.playSignal);
+            this.Controls.Add(this.PlayWav);
             this.Controls.Add(this.volumeValue);
             this.Controls.Add(this.volume);
             this.Controls.Add(this.RecordGroup);
@@ -306,7 +306,7 @@ namespace waveEditerVersion1
         private Button RecordPlay;
         private Button volume;
         private TextBox volumeValue;
-        private Button playSignal;
+        private Button PlayWav;
     }
 }
 

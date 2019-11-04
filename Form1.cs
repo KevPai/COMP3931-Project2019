@@ -20,17 +20,16 @@ namespace waveEditerVersion1
 
     {
         double[] samples;
+        byte[] signalData;
         byte[] bData;
         int sampleStart = 0, sampleEnd = 0, sampleRange = 0;
         bool selected = false;
         Wave.Fourier fourier = new Wave.Fourier();
         double volumeVal = 1.0;
 
-
-
         Wav wav;
 
-        byte[] pdata;
+
 
 
         public Form1()
@@ -71,26 +70,22 @@ namespace waveEditerVersion1
                     + "\nBits Per Sample: " + wav.bitsPerSample
                     + "\nData Chunk ID:   " + wav.dataChunkID
                     + "\nData Chunk Size: " + wav.dataChunkSize);
-
+                signalData = new byte[wavData.Length];
+                signalData = wavData;
                 generateWavSample(wavData);
             }
         }
         public void generateWavSample(byte[] data)
         {
-            samples = new double[(int)(wav.dataChunkSize / wav.blockAlign)];
-            Buffer.BlockCopy(data, 0, samples, 0, (int)(wav.dataChunkSize / wav.blockAlign));
+            samples = new double[(int)wav.dataChunkSize / wav.blockAlign];
+            short[] temp = new short[samples.Length];
 
+            for (int i = 0, j = 0; i < wav.dataChunkSize - 4; i += (int)wav.blockAlign, j++)
+            {
+                temp[j] = BitConverter.ToInt16(data, i);
+            }
+            samples = temp.Select(x => (double)(x)).ToArray();
             plotSample(samples.Length);
-
-            //samples = new int[(int)wav.dataChunkSize / wav.blockAlign];
-            //short[] temp = new short[samples.Length];
-
-            //for (int i = 0, j = 0; i < wav.dataChunkSize - 4; i += (int)wav.blockAlign, j++)
-            //{
-            //    temp[j] = BitConverter.ToInt16(data, i);
-            //}
-            //samples = temp.Select(x => (int)(x)).ToArray();
-            //plotSample(samples.Length);
         }
 
 
@@ -124,7 +119,7 @@ namespace waveEditerVersion1
                 chartArea.AxisX.Minimum = 0;
                 chartArea.AxisX.Maximum = length;
                 chartArea.AxisX.ScaleView.Zoomable = true;
-                //chartArea.AxisX.ScaleView.Zoom(0, 100);
+                chartArea.AxisX.ScaleView.Zoom(0, 100);
                 chartArea.AxisY.Minimum = miny;
                 chartArea.AxisY.Maximum = maxy;
                 chartArea.AxisX.ScaleView.SizeType = DateTimeIntervalType.Number;
@@ -265,22 +260,13 @@ namespace waveEditerVersion1
             Marshal.FreeHGlobal(iptr);
         }
 
-        public void playCurrentSignal()
+        void playWavSignal()
         {
-            pdata = new byte[(int)(wav.dataChunkSize / wav.blockAlign)];
-            Buffer.BlockCopy(samples, 0, pdata, 0, (int)(wav.dataChunkSize / wav.blockAlign));
-
-            //for (int i = 0;  i < samples.Length; i++)
-            //{
-            //    byte[] temp = BitConverter.GetBytes(samples[i]);
-            //    temp.CopyTo(pdata, i * wav.blockAlign);
-            //}
-        
-             
-
-            IntPtr iptr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(byte)) * pdata.Length);
-            Marshal.Copy(pdata, 0, iptr, pdata.Length);
-            Debug.WriteLine(PlayStart(iptr, pdata.Length, 16, 22050) ?
+            // make sure not to opendialog twice. do an if statement check later.
+            OpenDialog();
+            IntPtr iptr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(byte)) * signalData.Length);
+            Marshal.Copy(signalData, 0, iptr, signalData.Length);
+            Debug.WriteLine(PlayStart(iptr, signalData.Length, 16, 22050) ?
                 "play start succeeded" : "play start failed");
             Marshal.FreeHGlobal(iptr);
         }
@@ -373,9 +359,9 @@ namespace waveEditerVersion1
             volumeVal = double.Parse(volumeValue.Text) / 100.0;
         }
 
-        private void PlaySignal_Click(object sender, EventArgs e)
+        private void Button4_Click_4(object sender, EventArgs e)
         {
-            playCurrentSignal();
+            playWavSignal();
         }
 
         private void Button2_Click(object sender, EventArgs e)
