@@ -19,7 +19,8 @@ namespace waveEditerVersion1
     public partial class Form1 : Form
 
     {
-        double[] samples;
+        double[] samples, selectedSamples;
+        int selectedRange, selectStart, selectEnd;
         byte[] signalData;
         byte[] bData;
         int sampleStart = 0, sampleEnd = 0, sampleRange = 0;
@@ -88,6 +89,58 @@ namespace waveEditerVersion1
             plotSample(samples.Length);
         }
 
+        public void copy()
+        {
+            selectedSamples = new double[selectedRange];
+            selectedSamples = new List<double>(samples).GetRange(selectStart, selectedRange).ToArray();
+
+            short[] toShort = samples.Select(element => (short)(element)).ToArray();
+            signalData = toShort.Select(element => Convert.ToInt16(element))
+            .SelectMany(element => BitConverter.GetBytes(element)).ToArray();
+
+            plotSample(samples.Length);
+        }
+        public void cut()
+        {
+            if (!selected)
+            {
+                return;
+            }
+            selectedSamples = new double[selectedRange];
+
+            double[] left = new List<double>(samples).GetRange(0, selectStart).ToArray();
+            double[] right = new List<double>(samples).GetRange(selectEnd, samples.Length - selectEnd).ToArray();
+            selectedSamples = new List<double>(samples).GetRange(selectStart, selectedRange).ToArray();
+
+            samples = new double[left.Length + right.Length];
+            left.CopyTo(samples, 0);
+            right.CopyTo(samples, left.Length);
+
+            short[] toShort = samples.Select(element => (short)(element)).ToArray();
+            signalData = toShort.Select(element => Convert.ToInt16(element))
+            .SelectMany(element => BitConverter.GetBytes(element)).ToArray();
+
+
+            plotSample(samples.Length);
+        }
+
+        public void paste()
+        {
+            double[] left = new List<double>(samples).GetRange(0, selectEnd).ToArray();
+            double[] right = new List<double>(samples).GetRange(selectEnd, samples.Length - selectEnd).ToArray();
+
+            samples = new double[left.Length + selectedSamples.Length + right.Length];
+            left.CopyTo(samples, 0);
+            selectedSamples.CopyTo(samples, left.Length);
+            right.CopyTo(samples, selectedSamples.Length + left.Length);
+
+            short[] toShort = samples.Select(element => (short)(element)).ToArray();
+            signalData = toShort.Select(element => Convert.ToInt16(element))
+            .SelectMany(element => BitConverter.GetBytes(element)).ToArray();
+
+            plotSample(samples.Length);
+        }
+
 
         public void plotSample(int length)
         {
@@ -118,8 +171,8 @@ namespace waveEditerVersion1
                 ChartArea chartArea = waveChart.ChartAreas[waveChart.Series["waveSeries"].ChartArea];
                 chartArea.AxisX.Minimum = 0;
                 chartArea.AxisX.Maximum = length;
-                chartArea.AxisX.ScaleView.Zoomable = true;
-                chartArea.AxisX.ScaleView.Zoom(0, 100);
+                //chartArea.AxisX.ScaleView.Zoomable = true;
+                //chartArea.AxisX.ScaleView.Zoom(0, 100);
                 chartArea.AxisY.Minimum = miny;
                 chartArea.AxisY.Maximum = maxy;
                 chartArea.AxisX.ScaleView.SizeType = DateTimeIntervalType.Number;
@@ -270,6 +323,34 @@ namespace waveEditerVersion1
                 "play start succeeded" : "play start failed");
             Marshal.FreeHGlobal(iptr);
         }
+        //void selectSamples(object sender, CursorEventArgs e)
+        //{
+        //    if (samples == null)
+        //    {
+        //        return;
+        //    }
+        //    selectStart = (int)e.NewSelectionStart;
+        //    selectEnd = (int)e.NewSelectionEnd;
+        //    selectedRange = Math.Abs(selectStart - selectEnd);
+        //}
+        private void selectionSignal(object sender, CursorEventArgs e)
+        {
+            if (samples == null)
+            {
+                return;
+            }
+            selected = true;
+            selectStart = (int)e.NewSelectionStart;
+            selectEnd = (int)e.NewSelectionEnd;
+            if (selectStart > selectEnd)
+            {
+                int temp = selectEnd;
+                selectEnd = selectStart;
+                selectStart = temp;
+            }
+            selectedRange = Math.Abs(selectEnd - selectStart);
+            return;
+        }
 
 
 
@@ -347,6 +428,21 @@ namespace waveEditerVersion1
         private void Button4_Click_1(object sender, EventArgs e)
         {
             StopRecord();
+        }
+
+        private void ToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            cut();
+        }
+
+        private void PasteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            paste();
+        }
+
+        private void CopyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            copy();
         }
 
         private void Button4_Click_2(object sender, EventArgs e)

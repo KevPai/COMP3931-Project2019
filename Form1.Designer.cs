@@ -30,6 +30,7 @@ namespace waveEditerVersion1
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
@@ -37,6 +38,9 @@ namespace waveEditerVersion1
             System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.waveChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.sampleEndTextbox = new System.Windows.Forms.TextBox();
@@ -55,7 +59,9 @@ namespace waveEditerVersion1
             this.volume = new System.Windows.Forms.Button();
             this.volumeValue = new System.Windows.Forms.TextBox();
             this.PlayWav = new System.Windows.Forms.Button();
+            this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.waveChart)).BeginInit();
+            this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.frequencyChart)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.RecordGroup.SuspendLayout();
@@ -63,8 +69,14 @@ namespace waveEditerVersion1
             // 
             // waveChart
             // 
+            chartArea1.AxisX.ScaleView.Zoomable = false;
+            chartArea1.AxisY.ScaleView.Zoomable = false;
+            chartArea1.CursorX.IsUserEnabled = true;
+            chartArea1.CursorX.IsUserSelectionEnabled = true;
             chartArea1.Name = "ChartArea1";
             this.waveChart.ChartAreas.Add(chartArea1);
+            this.waveChart.ContextMenuStrip = this.contextMenuStrip1;
+            this.waveChart.Cursor = System.Windows.Forms.Cursors.IBeam;
             legend1.Name = "Legend1";
             this.waveChart.Legends.Add(legend1);
             this.waveChart.Location = new System.Drawing.Point(95, 59);
@@ -77,6 +89,31 @@ namespace waveEditerVersion1
             this.waveChart.Size = new System.Drawing.Size(1572, 328);
             this.waveChart.TabIndex = 0;
             this.waveChart.Text = "waveChart";
+            this.waveChart.SelectionRangeChanged += new System.EventHandler<System.Windows.Forms.DataVisualization.Charting.CursorEventArgs>(this.selectionSignal);
+            // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem2,
+            this.pasteToolStripMenuItem,
+            this.copyToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(301, 162);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(300, 38);
+            this.toolStripMenuItem2.Text = "Cut";
+            this.toolStripMenuItem2.Click += new System.EventHandler(this.ToolStripMenuItem2_Click);
+            // 
+            // pasteToolStripMenuItem
+            // 
+            this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
+            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(300, 38);
+            this.pasteToolStripMenuItem.Text = "Paste";
+            this.pasteToolStripMenuItem.Click += new System.EventHandler(this.PasteToolStripMenuItem_Click);
             // 
             // button1
             // 
@@ -256,6 +293,13 @@ namespace waveEditerVersion1
             this.PlayWav.UseVisualStyleBackColor = true;
             this.PlayWav.Click += new System.EventHandler(this.Button4_Click_4);
             // 
+            // copyToolStripMenuItem
+            // 
+            this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
+            this.copyToolStripMenuItem.Size = new System.Drawing.Size(300, 38);
+            this.copyToolStripMenuItem.Text = "Copy";
+            this.copyToolStripMenuItem.Click += new System.EventHandler(this.CopyToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
@@ -277,6 +321,7 @@ namespace waveEditerVersion1
             this.Name = "Form1";
             this.Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)(this.waveChart)).EndInit();
+            this.contextMenuStrip1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.frequencyChart)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
@@ -307,6 +352,10 @@ namespace waveEditerVersion1
         private Button volume;
         private TextBox volumeValue;
         private Button PlayWav;
+        private ContextMenuStrip contextMenuStrip1;
+        private ToolStripMenuItem toolStripMenuItem2;
+        private ToolStripMenuItem pasteToolStripMenuItem;
+        private ToolStripMenuItem copyToolStripMenuItem;
     }
 }
 
