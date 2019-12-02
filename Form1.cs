@@ -30,14 +30,10 @@ namespace waveEditerVersion1
 
         Wav wav;
 
-
-
-
         public Form1()
         {
             InitializeComponent();
         }
-
 
         public void readWaveFile()
         {
@@ -91,15 +87,13 @@ namespace waveEditerVersion1
 
         public void copy()
         {
-            selectedSamples = new double[selectedRange];
-            selectedSamples = new List<double>(samples).GetRange(selectStart, selectedRange).ToArray();
-
             short[] toShort = samples.Select(element => (short)(element)).ToArray();
             signalData = toShort.Select(element => Convert.ToInt16(element))
             .SelectMany(element => BitConverter.GetBytes(element)).ToArray();
 
             plotSample(samples.Length);
         }
+
         public void cut()
         {
             if (!selected)
@@ -207,7 +201,6 @@ namespace waveEditerVersion1
                 .SelectMany(e => BitConverter.GetBytes(e)).ToArray();
             byte[] header = new byte[44];
 
-
             Buffer.BlockCopy(wav.RIFFChunkID.ToCharArray(), 0, header, 0, 4);
             Buffer.BlockCopy(BitConverter.GetBytes(wav.RIFFChuckSize), 0, header, 4, 4);
             Buffer.BlockCopy(wav.format.ToCharArray(), 0, header, 8, 4);
@@ -240,7 +233,13 @@ namespace waveEditerVersion1
         private void ApplyDFT()
         {
             Series frequencySeries = frequencyChart.Series["frequencySeries"];
-            double[] Amp = fourier.DFT(samples);
+
+            if (!selected)
+            {
+                return;
+            }
+            double[] Amp = fourier.DFT(selectedSamples);
+
             int N = Amp.Length;
             for (int f = 0; f < N; f++)
             {
@@ -253,6 +252,7 @@ namespace waveEditerVersion1
             Debug.WriteLine(OpenDialog() ? "open rec succeeded" : "open rec failed");
             Debug.WriteLine(StartRec(16, 22050) ? "start rec succeeded" : "start rec failed");
         }
+
         public void StopRecord()
         {
             RecordData recordData = StopRec();
@@ -274,6 +274,7 @@ namespace waveEditerVersion1
 
             plotSample(samples.Length);
         }
+
         public void PlayRecord()
         {
             //byte[] data = null;
@@ -323,6 +324,7 @@ namespace waveEditerVersion1
                 "play start succeeded" : "play start failed");
             Marshal.FreeHGlobal(iptr);
         }
+
         //void selectSamples(object sender, CursorEventArgs e)
         //{
         //    if (samples == null)
@@ -349,11 +351,12 @@ namespace waveEditerVersion1
                 selectStart = temp;
             }
             selectedRange = Math.Abs(selectEnd - selectStart);
+
+            selectedSamples = new double[selectedRange];
+            selectedSamples = new List<double>(samples).GetRange(selectStart, selectedRange).ToArray();
+
             return;
         }
-
-
-
 
         [DllImport("Record.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool OpenDialog();
