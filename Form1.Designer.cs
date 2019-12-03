@@ -30,13 +30,18 @@ namespace waveEditerVersion1
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea9 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend9 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series9 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea10 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend10 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series10 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            this.components = new System.ComponentModel.Container();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.waveChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.sampleEndTextbox = new System.Windows.Forms.TextBox();
@@ -55,10 +60,13 @@ namespace waveEditerVersion1
             this.volume = new System.Windows.Forms.Button();
             this.volumeValue = new System.Windows.Forms.TextBox();
             this.PlayWav = new System.Windows.Forms.Button();
-            this.button5 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
-            this.button6 = new System.Windows.Forms.Button();
+            this.filterButton = new System.Windows.Forms.Button();
+            this.HighPassValue = new System.Windows.Forms.TextBox();
+            this.LowPassValue = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.waveChart)).BeginInit();
+            this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.frequencyChart)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.RecordGroup.SuspendLayout();
@@ -66,29 +74,63 @@ namespace waveEditerVersion1
             // 
             // waveChart
             // 
-            chartArea9.Name = "ChartArea1";
-            this.waveChart.ChartAreas.Add(chartArea9);
-            legend9.Name = "Legend1";
-            this.waveChart.Legends.Add(legend9);
-            this.waveChart.Location = new System.Drawing.Point(71, 98);
+            chartArea1.AxisX.ScaleView.Zoomable = false;
+            chartArea1.AxisY.ScaleView.Zoomable = false;
+            chartArea1.CursorX.IsUserEnabled = true;
+            chartArea1.CursorX.IsUserSelectionEnabled = true;
+            chartArea1.Name = "ChartArea1";
+            this.waveChart.ChartAreas.Add(chartArea1);
+            this.waveChart.ContextMenuStrip = this.contextMenuStrip1;
+            this.waveChart.Cursor = System.Windows.Forms.Cursors.IBeam;
+            legend1.Name = "Legend1";
+            this.waveChart.Legends.Add(legend1);
+            this.waveChart.Location = new System.Drawing.Point(71, 47);
             this.waveChart.Margin = new System.Windows.Forms.Padding(2);
             this.waveChart.Name = "waveChart";
-            series9.ChartArea = "ChartArea1";
-            series9.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastLine;
-            series9.Legend = "Legend1";
-            series9.Name = "waveSeries";
-            this.waveChart.Series.Add(series9);
+            series1.ChartArea = "ChartArea1";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastLine;
+            series1.Legend = "Legend1";
+            series1.Name = "waveSeries";
+            this.waveChart.Series.Add(series1);
             this.waveChart.Size = new System.Drawing.Size(1179, 262);
             this.waveChart.TabIndex = 0;
             this.waveChart.Text = "waveChart";
-            this.waveChart.Paint += new System.Windows.Forms.PaintEventHandler(this.WaveChart_Paint);
-            this.waveChart.MouseDown += new System.Windows.Forms.MouseEventHandler(this.WaveChart_MouseDown);
-            this.waveChart.MouseMove += new System.Windows.Forms.MouseEventHandler(this.WaveChart_MouseMove);
-            this.waveChart.MouseUp += new System.Windows.Forms.MouseEventHandler(this.WaveChart_MouseUp);
+            this.waveChart.SelectionRangeChanged += new System.EventHandler<System.Windows.Forms.DataVisualization.Charting.CursorEventArgs>(this.selectionSignal);
+            // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem2,
+            this.pasteToolStripMenuItem,
+            this.copyToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(127, 100);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(126, 32);
+            this.toolStripMenuItem2.Text = "Cut";
+            this.toolStripMenuItem2.Click += new System.EventHandler(this.ToolStripMenuItem2_Click);
+            // 
+            // pasteToolStripMenuItem
+            // 
+            this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
+            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(126, 32);
+            this.pasteToolStripMenuItem.Text = "Paste";
+            this.pasteToolStripMenuItem.Click += new System.EventHandler(this.PasteToolStripMenuItem_Click);
+            // 
+            // copyToolStripMenuItem
+            // 
+            this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
+            this.copyToolStripMenuItem.Size = new System.Drawing.Size(126, 32);
+            this.copyToolStripMenuItem.Text = "Copy";
+            this.copyToolStripMenuItem.Click += new System.EventHandler(this.CopyToolStripMenuItem_Click);
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(1064, 243);
+            this.button1.Location = new System.Drawing.Point(1063, 207);
             this.button1.Margin = new System.Windows.Forms.Padding(2);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(172, 31);
@@ -99,7 +141,7 @@ namespace waveEditerVersion1
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(1064, 129);
+            this.button2.Location = new System.Drawing.Point(1063, 93);
             this.button2.Margin = new System.Windows.Forms.Padding(2);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(84, 59);
@@ -110,7 +152,7 @@ namespace waveEditerVersion1
             // 
             // sampleEndTextbox
             // 
-            this.sampleEndTextbox.Location = new System.Drawing.Point(1160, 164);
+            this.sampleEndTextbox.Location = new System.Drawing.Point(1159, 128);
             this.sampleEndTextbox.Margin = new System.Windows.Forms.Padding(2);
             this.sampleEndTextbox.Name = "sampleEndTextbox";
             this.sampleEndTextbox.Size = new System.Drawing.Size(76, 26);
@@ -119,7 +161,7 @@ namespace waveEditerVersion1
             // 
             // sampleStartTextbox
             // 
-            this.sampleStartTextbox.Location = new System.Drawing.Point(1160, 129);
+            this.sampleStartTextbox.Location = new System.Drawing.Point(1159, 93);
             this.sampleStartTextbox.Margin = new System.Windows.Forms.Padding(2);
             this.sampleStartTextbox.Name = "sampleStartTextbox";
             this.sampleStartTextbox.Size = new System.Drawing.Size(76, 26);
@@ -128,24 +170,24 @@ namespace waveEditerVersion1
             // 
             // frequencyChart
             // 
-            chartArea10.Name = "ChartArea1";
-            this.frequencyChart.ChartAreas.Add(chartArea10);
-            legend10.Name = "Legend1";
-            this.frequencyChart.Legends.Add(legend10);
-            this.frequencyChart.Location = new System.Drawing.Point(71, 390);
+            chartArea2.Name = "ChartArea1";
+            this.frequencyChart.ChartAreas.Add(chartArea2);
+            legend2.Name = "Legend1";
+            this.frequencyChart.Legends.Add(legend2);
+            this.frequencyChart.Location = new System.Drawing.Point(71, 345);
             this.frequencyChart.Margin = new System.Windows.Forms.Padding(2);
             this.frequencyChart.Name = "frequencyChart";
-            series10.ChartArea = "ChartArea1";
-            series10.Legend = "Legend1";
-            series10.Name = "frequencySeries";
-            this.frequencyChart.Series.Add(series10);
+            series2.ChartArea = "ChartArea1";
+            series2.Legend = "Legend1";
+            series2.Name = "frequencySeries";
+            this.frequencyChart.Series.Add(series2);
             this.frequencyChart.Size = new System.Drawing.Size(1179, 265);
             this.frequencyChart.TabIndex = 5;
             this.frequencyChart.Text = "frequencyChart";
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(1064, 195);
+            this.button3.Location = new System.Drawing.Point(1063, 159);
             this.button3.Margin = new System.Windows.Forms.Padding(2);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(172, 36);
@@ -163,7 +205,7 @@ namespace waveEditerVersion1
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(4, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(1312, 36);
+            this.menuStrip1.Size = new System.Drawing.Size(1303, 33);
             this.menuStrip1.TabIndex = 7;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -205,11 +247,11 @@ namespace waveEditerVersion1
             this.RecordGroup.Controls.Add(this.RecordPlay);
             this.RecordGroup.Controls.Add(this.RecordStop);
             this.RecordGroup.Controls.Add(this.recordStart);
-            this.RecordGroup.Location = new System.Drawing.Point(1041, 468);
+            this.RecordGroup.Location = new System.Drawing.Point(1003, 424);
             this.RecordGroup.Margin = new System.Windows.Forms.Padding(2);
             this.RecordGroup.Name = "RecordGroup";
             this.RecordGroup.Padding = new System.Windows.Forms.Padding(2);
-            this.RecordGroup.Size = new System.Drawing.Size(144, 170);
+            this.RecordGroup.Size = new System.Drawing.Size(128, 170);
             this.RecordGroup.TabIndex = 8;
             this.RecordGroup.TabStop = false;
             this.RecordGroup.Text = "Record";
@@ -220,7 +262,7 @@ namespace waveEditerVersion1
             this.RecordPlay.Location = new System.Drawing.Point(5, 122);
             this.RecordPlay.Margin = new System.Windows.Forms.Padding(2);
             this.RecordPlay.Name = "RecordPlay";
-            this.RecordPlay.Size = new System.Drawing.Size(134, 36);
+            this.RecordPlay.Size = new System.Drawing.Size(119, 36);
             this.RecordPlay.TabIndex = 2;
             this.RecordPlay.Text = "Play";
             this.RecordPlay.UseVisualStyleBackColor = true;
@@ -231,7 +273,7 @@ namespace waveEditerVersion1
             this.RecordStop.Location = new System.Drawing.Point(5, 74);
             this.RecordStop.Margin = new System.Windows.Forms.Padding(2);
             this.RecordStop.Name = "RecordStop";
-            this.RecordStop.Size = new System.Drawing.Size(134, 35);
+            this.RecordStop.Size = new System.Drawing.Size(119, 35);
             this.RecordStop.TabIndex = 1;
             this.RecordStop.Text = "stop";
             this.RecordStop.UseVisualStyleBackColor = true;
@@ -242,7 +284,7 @@ namespace waveEditerVersion1
             this.recordStart.Location = new System.Drawing.Point(5, 25);
             this.recordStart.Margin = new System.Windows.Forms.Padding(2);
             this.recordStart.Name = "recordStart";
-            this.recordStart.Size = new System.Drawing.Size(134, 36);
+            this.recordStart.Size = new System.Drawing.Size(119, 36);
             this.recordStart.TabIndex = 0;
             this.recordStart.Text = "start";
             this.recordStart.UseVisualStyleBackColor = true;
@@ -250,10 +292,10 @@ namespace waveEditerVersion1
             // 
             // volume
             // 
-            this.volume.Location = new System.Drawing.Point(1046, 428);
+            this.volume.Location = new System.Drawing.Point(1003, 385);
             this.volume.Margin = new System.Windows.Forms.Padding(2);
             this.volume.Name = "volume";
-            this.volume.Size = new System.Drawing.Size(101, 35);
+            this.volume.Size = new System.Drawing.Size(128, 35);
             this.volume.TabIndex = 9;
             this.volume.Text = "setVolume";
             this.volume.UseVisualStyleBackColor = true;
@@ -261,7 +303,7 @@ namespace waveEditerVersion1
             // 
             // volumeValue
             // 
-            this.volumeValue.Location = new System.Drawing.Point(1152, 434);
+            this.volumeValue.Location = new System.Drawing.Point(1150, 389);
             this.volumeValue.Margin = new System.Windows.Forms.Padding(2);
             this.volumeValue.Name = "volumeValue";
             this.volumeValue.Size = new System.Drawing.Size(76, 26);
@@ -270,7 +312,7 @@ namespace waveEditerVersion1
             // 
             // PlayWav
             // 
-            this.PlayWav.Location = new System.Drawing.Point(1064, 293);
+            this.PlayWav.Location = new System.Drawing.Point(1063, 257);
             this.PlayWav.Margin = new System.Windows.Forms.Padding(2);
             this.PlayWav.Name = "PlayWav";
             this.PlayWav.Size = new System.Drawing.Size(172, 37);
@@ -279,44 +321,60 @@ namespace waveEditerVersion1
             this.PlayWav.UseVisualStyleBackColor = true;
             this.PlayWav.Click += new System.EventHandler(this.Button4_Click_4);
             // 
-            // button5
+            // filterButton
             // 
-            this.button5.Location = new System.Drawing.Point(215, 36);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(107, 42);
-            this.button5.TabIndex = 13;
-            this.button5.Text = "Copy";
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.Copy_Click);
+            this.filterButton.Location = new System.Drawing.Point(1137, 424);
+            this.filterButton.Name = "filterButton";
+            this.filterButton.Size = new System.Drawing.Size(99, 42);
+            this.filterButton.TabIndex = 13;
+            this.filterButton.Text = "Apply Filter";
+            this.filterButton.UseVisualStyleBackColor = true;
+            this.filterButton.Click += new System.EventHandler(this.filterButton_Click);
             // 
-            // button4
+            // HighPassValue
             // 
-            this.button4.Location = new System.Drawing.Point(71, 36);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(107, 42);
-            this.button4.TabIndex = 15;
-            this.button4.Text = "Cut";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.Cut_Click);
+            this.HighPassValue.Location = new System.Drawing.Point(1136, 507);
+            this.HighPassValue.Name = "HighPassValue";
+            this.HighPassValue.Size = new System.Drawing.Size(100, 26);
+            this.HighPassValue.TabIndex = 14;
+            this.HighPassValue.Text = "0";
             // 
-            // button6
+            // LowPassValue
             // 
-            this.button6.Location = new System.Drawing.Point(355, 36);
-            this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(107, 42);
-            this.button6.TabIndex = 16;
-            this.button6.Text = "Paste";
-            this.button6.UseVisualStyleBackColor = true;
-            this.button6.Click += new System.EventHandler(this.Paste_Click);
+            this.LowPassValue.Location = new System.Drawing.Point(1136, 568);
+            this.LowPassValue.Name = "LowPassValue";
+            this.LowPassValue.Size = new System.Drawing.Size(100, 26);
+            this.LowPassValue.TabIndex = 15;
+            this.LowPassValue.Text = "0";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(1132, 484);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(115, 20);
+            this.label1.TabIndex = 16;
+            this.label1.Text = "High-pass (Hz)";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(1133, 546);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(111, 20);
+            this.label2.TabIndex = 17;
+            this.label2.Text = "Low-pass (Hz)";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1312, 684);
-            this.Controls.Add(this.button6);
-            this.Controls.Add(this.button4);
-            this.Controls.Add(this.button5);
+            this.ClientSize = new System.Drawing.Size(1303, 621);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.LowPassValue);
+            this.Controls.Add(this.HighPassValue);
+            this.Controls.Add(this.filterButton);
             this.Controls.Add(this.PlayWav);
             this.Controls.Add(this.volumeValue);
             this.Controls.Add(this.volume);
@@ -334,6 +392,7 @@ namespace waveEditerVersion1
             this.Name = "Form1";
             this.Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)(this.waveChart)).EndInit();
+            this.contextMenuStrip1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.frequencyChart)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
@@ -364,9 +423,15 @@ namespace waveEditerVersion1
         private Button volume;
         private TextBox volumeValue;
         private Button PlayWav;
-        private Button button5;
-        private Button button4;
-        private Button button6;
+        private ContextMenuStrip contextMenuStrip1;
+        private ToolStripMenuItem toolStripMenuItem2;
+        private ToolStripMenuItem pasteToolStripMenuItem;
+        private ToolStripMenuItem copyToolStripMenuItem;
+        private Button filterButton;
+        private TextBox HighPassValue;
+        private TextBox LowPassValue;
+        private Label label1;
+        private Label label2;
     }
 }
 
