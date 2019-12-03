@@ -266,7 +266,6 @@ namespace waveEditerVersion1
             }
 
         }
-
         public void StartRecord()
         {
             Debug.WriteLine(OpenDialog() ? "open rec succeeded" : "open rec failed");
