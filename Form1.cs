@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using WaveFile;
-using static Wave.Fourier;
+using Wave;
 
 
 namespace waveEditerVersion1
@@ -19,13 +19,14 @@ namespace waveEditerVersion1
     public partial class Form1 : Form
 
     {
-        double[] samples, selectedSamples;
+        double[] samples, selectedSamples, fourierAmp;
         int selectedRange, selectStart, selectEnd;
         byte[] signalData;
         byte[] bData;
         int sampleStart = 0, sampleEnd = 0, sampleRange = 0;
         bool selected = false;
         Wave.Fourier fourier = new Wave.Fourier();
+        Wave.Filter filter = new Wave.Filter();
         double volumeVal = 1.0;
 
         Wav wav;
@@ -233,18 +234,37 @@ namespace waveEditerVersion1
         private void ApplyDFT()
         {
             Series frequencySeries = frequencyChart.Series["frequencySeries"];
+            frequencySeries.Points.Clear();
 
             if (!selected)
             {
                 return;
             }
-            double[] Amp = fourier.DFT(selectedSamples);
+            fourierAmp = fourier.DFT(selectedSamples);
 
-            int N = Amp.Length;
+            int N = fourierAmp.Length;
             for (int f = 0; f < N; f++)
             {
-                frequencySeries.Points.AddXY(f, Amp[f]);
+                frequencySeries.Points.AddXY(f, fourierAmp[f]);
             }
+        }
+
+        private void ApplyFilter()
+        {
+            Series frequencySeries = frequencyChart.Series["frequencySeries"];
+            frequencySeries.Points.Clear();
+
+            if (fourierAmp == null)
+            {
+                return;
+            }
+
+            fourierAmp = filter.applyFilter(double.Parse(HighPassValue.Text), double.Parse(LowPassValue.Text), fourierAmp);
+            for (int f = 0; f < fourierAmp.Length; f++)
+            {
+                frequencySeries.Points.AddXY(f, fourierAmp[f]);
+            }
+
         }
 
         public void StartRecord()
@@ -441,6 +461,14 @@ namespace waveEditerVersion1
         private void PasteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             paste();
+        }
+
+        private void filterButton_Click(object sender, EventArgs e)
+        {
+            Debug.WriteLine("Highpass is: " + HighPassValue.Text);
+            Debug.WriteLine("Lowpass is: " + LowPassValue.Text);
+
+            ApplyFilter();
         }
 
         private void CopyToolStripMenuItem_Click(object sender, EventArgs e)
