@@ -1,0 +1,20 @@
+C:\Users\haoju\Desktop\digital image & audio processing\waveEditerVersion1\bin\Debug\waveEditerVersion1.exe.config
+C:\Users\haoju\Desktop\digital image & audio processing\waveEditerVersion1\bin\Debug\waveEditerVersion1.exe
+C:\Users\haoju\Desktop\digital image & audio processing\waveEditerVersion1\bin\Debug\waveEditerVersion1.pdb
+C:\Users\haoju\Desktop\digital image & audio processing\waveEditerVersion1\obj\Debug\waveEditerVersion1.Form1.resources
+C:\Users\haoju\Desktop\digital image & audio processing\waveEditerVersion1\obj\Debug\waveEditerVersion1.Properties.Resources.resources
+C:\Users\haoju\Desktop\digital image & audio processing\waveEditerVersion1\obj\Debug\waveEditerVersion1.csproj.GenerateResource.cache
+C:\Users\haoju\Desktop\digital image & audio processing\waveEditerVersion1\obj\Debug\waveEditerVersion1.csproj.CoreCompileInputs.cache
+C:\Users\haoju\Desktop\digital image & audio processing\waveEditerVersion1\obj\Debug\waveEditerVersion1.exe
+C:\Users\haoju\Desktop\digital image & audio processing\waveEditerVersion1\obj\Debug\waveEditerVersion1.pdb
+C:\Users\haoju\Desktop\digital image & audio processing\waveEditerVersion1\obj\Debug\waveEditerVersion1.csprojAssemblyReference.cache
+C:\Users\KPai5\Desktop\COMP3931-Project2019-master\bin\Debug\waveEditerVersion1.exe.config
+C:\Users\KPai5\Desktop\COMP3931-Project2019-master\bin\Debug\waveEditerVersion1.exe
+C:\Users\KPai5\Desktop\COMP3931-Project2019-master\bin\Debug\waveEditerVersion1.pdb
+C:\Users\KPai5\Desktop\COMP3931-Project2019-master\obj\Debug\waveEditerVersion1.csprojAssemblyReference.cache
+C:\Users\KPai5\Desktop\COMP3931-Project2019-master\obj\Debug\waveEditerVersion1.Form1.resources
+C:\Users\KPai5\Desktop\COMP3931-Project2019-master\obj\Debug\waveEditerVersion1.Properties.Resources.resources
+C:\Users\KPai5\Desktop\COMP3931-Project2019-master\obj\Debug\waveEditerVersion1.csproj.GenerateResource.cache
+C:\Users\KPai5\Desktop\COMP3931-Project2019-master\obj\Debug\waveEditerVersion1.csproj.CoreCompileInputs.cache
+C:\Users\KPai5\Desktop\COMP3931-Project2019-master\obj\Debug\waveEditerVersion1.exe
+C:\Users\KPai5\Desktop\COMP3931-Project2019-master\obj\Debug\waveEditerVersion1.pdb
