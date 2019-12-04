@@ -28,7 +28,6 @@ namespace Wave
             return A;
         }
     }
-
     class Filter
     {
         public double[] applyFilter(double high, double low, double[] f)

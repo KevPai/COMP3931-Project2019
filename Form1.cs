@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using WaveFile;
+using static Wave.Fourier;
 using Wave;
 
 
@@ -23,6 +24,7 @@ namespace waveEditerVersion1
         int selectedRange, selectStart, selectEnd;
         byte[] signalData;
         byte[] bData;
+        double windowing = 1.0;
         int sampleStart = 0, sampleEnd = 0, sampleRange = 0;
         bool selected = false;
         Wave.Fourier fourier = new Wave.Fourier();
@@ -70,9 +72,24 @@ namespace waveEditerVersion1
                     + "\nData Chunk Size: " + wav.dataChunkSize);
                 signalData = new byte[wavData.Length];
                 signalData = wavData;
+       
                 generateWavSample(wavData);
             }
         }
+
+        public void saveAsWav()
+        {
+            if (wav == null)
+                return;
+            SaveFileDialog saveDialog = new SaveFileDialog();
+            saveDialog.Filter = "WAV|*.wav";
+            if (saveDialog.ShowDialog() == DialogResult.OK)
+            {
+                WaveGenerator wave = new WaveGenerator(samples);
+                wave.Save(saveDialog.FileName);
+            }
+        }
+
         public void generateWavSample(byte[] data)
         {
             samples = new double[(int)wav.dataChunkSize / wav.blockAlign];
@@ -88,6 +105,10 @@ namespace waveEditerVersion1
 
         public void copy()
         {
+
+            selectedSamples = new double[selectedRange];
+            selectedSamples = new List<double>(samples).GetRange(selectStart, selectedRange).ToArray();
+
             short[] toShort = samples.Select(element => (short)(element)).ToArray();
             signalData = toShort.Select(element => Convert.ToInt16(element))
             .SelectMany(element => BitConverter.GetBytes(element)).ToArray();
@@ -174,6 +195,8 @@ namespace waveEditerVersion1
                 chartArea.AxisX.ScrollBar.ButtonStyle = ScrollBarButtonStyles.SmallScroll;
                 chartArea.AxisX.ScrollBar.ButtonColor = Color.Black;
             }
+            waveChart.MouseWheel += chart1_MouseWheel;
+
             //else
             //{
             //    sampleRange = sampleEnd - sampleStart;
@@ -193,6 +216,7 @@ namespace waveEditerVersion1
             //    chartArea.AxisX.ScrollBar.ButtonColor = Color.Black;
             //}
         }
+
         public void saveAsWav()
         {
             if (wav == null)
@@ -234,6 +258,7 @@ namespace waveEditerVersion1
         private void ApplyDFT()
         {
             Series frequencySeries = frequencyChart.Series["frequencySeries"];
+
             frequencySeries.Points.Clear();
 
             if (!selected)
@@ -272,7 +297,7 @@ namespace waveEditerVersion1
             Debug.WriteLine(OpenDialog() ? "open rec succeeded" : "open rec failed");
             Debug.WriteLine(StartRec(16, 22050) ? "start rec succeeded" : "start rec failed");
         }
-
+        
         public void StopRecord()
         {
             RecordData recordData = StopRec();
@@ -329,7 +354,9 @@ namespace waveEditerVersion1
 
             IntPtr iptr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(byte)) * bData.Length);
             Marshal.Copy(bData, 0, iptr, bData.Length);
-            Debug.WriteLine(PlayStart(iptr, bData.Length, 16, 22050) ?
+
+            Debug.WriteLine(PlayStart(iptr, bData.Length, 16, 11025) ?
+
                 "play start succeeded" : "play start failed");
             Marshal.FreeHGlobal(iptr);
         }
@@ -340,7 +367,8 @@ namespace waveEditerVersion1
             OpenDialog();
             IntPtr iptr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(byte)) * signalData.Length);
             Marshal.Copy(signalData, 0, iptr, signalData.Length);
-            Debug.WriteLine(PlayStart(iptr, signalData.Length, 16, 22050) ?
+
+            Debug.WriteLine(PlayStart(iptr, signalData.Length, 16, 11025) ?
                 "play start succeeded" : "play start failed");
             Marshal.FreeHGlobal(iptr);
         }
@@ -371,12 +399,63 @@ namespace waveEditerVersion1
                 selectStart = temp;
             }
             selectedRange = Math.Abs(selectEnd - selectStart);
-
-            selectedSamples = new double[selectedRange];
-            selectedSamples = new List<double>(samples).GetRange(selectStart, selectedRange).ToArray();
-
             return;
         }
+
+        private void applyWindowing(int w, int N, int start)
+        {
+            Debug.WriteLine(N);
+            Debug.WriteLine(start);
+            double[] window = new double[N];
+            switch (w)
+            {
+                case 1:
+                    for (int i = 0; i < N; i++)
+                    {
+                        window[i] = 1.0 - Math.Abs((i - N / 2.0) / N / 2.0);
+                        Debug.WriteLine(window[i]);
+                    }
+                    break;
+                case 2:
+                    for (int i = 0; i < N; i++)
+                    {
+                        window[i] = 1.0 - Math.Pow(Math.Abs((i - N / 2.0) / N / 2.0), 2);
+                       
+                    }
+                    break;
+            }
+            for (int i = 0; i < N; i++)
+            {
+                samples[start + i] = samples[start + i] * window[i];
+            }
+        }
+
+        private void chart1_MouseWheel(object sender, MouseEventArgs e)
+        {
+            var chart = (Chart)sender;
+            var xAxis = chart.ChartAreas[0].AxisX;
+            try
+            {
+                if (e.Delta < 0) // Scrolled down.
+                {
+                    var xMin = xAxis.ScaleView.ViewMinimum;
+                    var xMax = xAxis.ScaleView.ViewMaximum;
+                    var posXStart = xAxis.PixelPositionToValue(e.Location.X) - (xMax - xMin) * 2;
+                    var posXFinish = xAxis.PixelPositionToValue(e.Location.X) + (xMax - xMin) * 2;
+                    xAxis.ScaleView.Zoom(posXStart, posXFinish);
+                }
+                else if (e.Delta > 0) // Scrolled up.
+                {
+                    var xMin = xAxis.ScaleView.ViewMinimum;
+                    var xMax = xAxis.ScaleView.ViewMaximum;
+                    var posXStart = xAxis.PixelPositionToValue(e.Location.X) - (xMax - xMin) / 4;
+                    var posXFinish = xAxis.PixelPositionToValue(e.Location.X) + (xMax - xMin) / 4;
+                    xAxis.ScaleView.Zoom(posXStart, posXFinish);
+                }
+            }
+            catch { }
+        }
+
 
         [DllImport("Record.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool OpenDialog();
@@ -463,6 +542,31 @@ namespace waveEditerVersion1
             paste();
         }
 
+
+        private void CopyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            copy();
+        }
+
+        private void TriangularToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (selectedRange == 0)
+            {
+                return;
+            }
+            applyWindowing(1, selectedRange, selectStart);
+            plotSample(samples.Length);
+        }
+
+        private void RectangularToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (selectedRange == 0)
+            {
+                return;
+            }
+            applyWindowing(2, selectedRange, selectStart);
+            plotSample(samples.Length);
+        }
         private void filterButton_Click(object sender, EventArgs e)
         {
             Debug.WriteLine("Highpass is: " + HighPassValue.Text);
@@ -471,10 +575,7 @@ namespace waveEditerVersion1
             ApplyFilter();
         }
 
-        private void CopyToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            copy();
-        }
+
 
         private void Button4_Click_2(object sender, EventArgs e)
         {
