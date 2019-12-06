@@ -13,22 +13,21 @@ using System.Windows.Forms.DataVisualization.Charting;
 using WaveFile;
 using Wave;
 
-
 namespace waveEditerVersion1
 {
     public partial class Form1 : Form
 
     {
-        double[] samples, selectedSamples, fourierAmp;
+        double[] samples, selectedSamples, selectedFourier, fourierAmp;
         int selectedRange, selectStart, selectEnd;
+        int fourierRange, startFourier, endFourier;
         byte[] signalData;
         byte[] bData;
         int sampleStart = 0, sampleEnd = 0, sampleRange = 0;
         bool selected = false;
+        bool selectFourier = false;
         Wave.Fourier fourier = new Wave.Fourier();
-        Wave.Filter filter = new Wave.Filter();
         double volumeVal = 1.0;
-
         Wav wav;
 
         public Form1()
@@ -193,6 +192,7 @@ namespace waveEditerVersion1
             //    chartArea.AxisX.ScrollBar.ButtonColor = Color.Black;
             //}
         }
+
         public void saveAsWav()
         {
             if (wav == null)
@@ -249,6 +249,21 @@ namespace waveEditerVersion1
             }
         }
 
+        private void ApplyInverse()
+        {
+            if (fourierAmp == null)
+            {
+                return;
+            }
+
+            samples = fourier.inverseDFT(fourierAmp);
+            plotSample(samples.Length);
+
+            short[] toShort = samples.Select(element => (short)(element)).ToArray();
+            signalData = toShort.Select(element => Convert.ToInt16(element))
+            .SelectMany(element => BitConverter.GetBytes(element)).ToArray();
+        }
+
         private void ApplyFilter()
         {
             Series frequencySeries = frequencyChart.Series["frequencySeries"];
@@ -259,13 +274,13 @@ namespace waveEditerVersion1
                 return;
             }
 
-            fourierAmp = filter.applyFilter(double.Parse(HighPassValue.Text), double.Parse(LowPassValue.Text), fourierAmp);
+            fourierAmp = fourier.applyFilter(double.Parse(HighPassValue.Text), double.Parse(LowPassValue.Text), fourierAmp);
             for (int f = 0; f < fourierAmp.Length; f++)
             {
                 frequencySeries.Points.AddXY(f, fourierAmp[f]);
             }
-
         }
+
         public void StartRecord()
         {
             Debug.WriteLine(OpenDialog() ? "open rec succeeded" : "open rec failed");
@@ -321,7 +336,6 @@ namespace waveEditerVersion1
                     }
                     bData[i] = (byte)temp;
 
-
                 }
                 Debug.WriteLine(bData[5000]);
             }
@@ -363,6 +377,10 @@ namespace waveEditerVersion1
             selected = true;
             selectStart = (int)e.NewSelectionStart;
             selectEnd = (int)e.NewSelectionEnd;
+
+            Debug.WriteLine((int)e.NewSelectionStart);
+            Debug.WriteLine((int)e.NewSelectionEnd);
+
             if (selectStart > selectEnd)
             {
                 int temp = selectEnd;
@@ -373,6 +391,32 @@ namespace waveEditerVersion1
 
             selectedSamples = new double[selectedRange];
             selectedSamples = new List<double>(samples).GetRange(selectStart, selectedRange).ToArray();
+
+            return;
+        }
+
+        private void selectionFreq(object sender, CursorEventArgs a)
+        {
+            /*if (fourierAmp == null)
+            {
+                return;
+            }
+            selectFourier = true;
+            startFourier = (int)a.NewSelectionStart;
+            endFourier = (int)a.NewSelectionEnd;
+            if (startFourier > endFourier)
+            {
+                int temp = endFourier;
+                endFourier = startFourier;
+                startFourier = temp;
+            }
+            fourierRange = Math.Abs(endFourier - selectStart);
+
+            selectedFourier = new double[fourierRange];
+            selectedFourier = new List<double>(fourierAmp).GetRange(startFourier, fourierRange).ToArray();*/
+
+            Debug.WriteLine((int)a.NewSelectionStart);
+            Debug.WriteLine((int)a.NewSelectionEnd);
 
             return;
         }
@@ -464,15 +508,22 @@ namespace waveEditerVersion1
 
         private void filterButton_Click(object sender, EventArgs e)
         {
-            Debug.WriteLine("Highpass is: " + HighPassValue.Text);
-            Debug.WriteLine("Lowpass is: " + LowPassValue.Text);
-
             ApplyFilter();
+        }
+
+        private void InverseDFT_Click(object sender, EventArgs e)
+        {
+            ApplyInverse();
         }
 
         private void CopyToolStripMenuItem_Click(object sender, EventArgs e)
         {
             copy();
+        }
+
+        private void FilterToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Debug.WriteLine("FILTERING");
         }
 
         private void Button4_Click_2(object sender, EventArgs e)
@@ -503,6 +554,4 @@ namespace waveEditerVersion1
             plotSample(300);
         }
     }
-
-
 }

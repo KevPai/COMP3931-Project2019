@@ -47,6 +47,8 @@ namespace waveEditerVersion1
             this.sampleEndTextbox = new System.Windows.Forms.TextBox();
             this.sampleStartTextbox = new System.Windows.Forms.TextBox();
             this.frequencyChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.filterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.button3 = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.oPENToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -65,9 +67,11 @@ namespace waveEditerVersion1
             this.LowPassValue = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.inverseDFT = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.waveChart)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.frequencyChart)).BeginInit();
+            this.contextMenuStrip2.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.RecordGroup.SuspendLayout();
             this.SuspendLayout();
@@ -92,7 +96,7 @@ namespace waveEditerVersion1
             series1.Legend = "Legend1";
             series1.Name = "waveSeries";
             this.waveChart.Series.Add(series1);
-            this.waveChart.Size = new System.Drawing.Size(1179, 262);
+            this.waveChart.Size = new System.Drawing.Size(1179, 275);
             this.waveChart.TabIndex = 0;
             this.waveChart.Text = "waveChart";
             this.waveChart.SelectionRangeChanged += new System.EventHandler<System.Windows.Forms.DataVisualization.Charting.CursorEventArgs>(this.selectionSignal);
@@ -130,12 +134,12 @@ namespace waveEditerVersion1
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(1063, 207);
+            this.button1.Location = new System.Drawing.Point(1064, 243);
             this.button1.Margin = new System.Windows.Forms.Padding(2);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(172, 31);
+            this.button1.Size = new System.Drawing.Size(172, 33);
             this.button1.TabIndex = 1;
-            this.button1.Text = "draw wave";
+            this.button1.Text = "Draw Wave";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.Button1_Click);
             // 
@@ -170,27 +174,49 @@ namespace waveEditerVersion1
             // 
             // frequencyChart
             // 
-            chartArea2.Name = "ChartArea1";
+            chartArea2.AxisX.ScaleView.Zoomable = false;
+            chartArea2.AxisY.ScaleView.Zoomable = false;
+            chartArea2.CursorX.IsUserEnabled = true;
+            chartArea2.CursorX.IsUserSelectionEnabled = true;
+            chartArea2.Name = "ChartArea2";
             this.frequencyChart.ChartAreas.Add(chartArea2);
-            legend2.Name = "Legend1";
+            this.frequencyChart.ContextMenuStrip = this.contextMenuStrip2;
+            this.frequencyChart.Cursor = System.Windows.Forms.Cursors.Default;
+            legend2.Name = "Legend2";
             this.frequencyChart.Legends.Add(legend2);
             this.frequencyChart.Location = new System.Drawing.Point(71, 345);
             this.frequencyChart.Margin = new System.Windows.Forms.Padding(2);
             this.frequencyChart.Name = "frequencyChart";
-            series2.ChartArea = "ChartArea1";
-            series2.Legend = "Legend1";
+            series2.ChartArea = "ChartArea2";
+            series2.Legend = "Legend2";
             series2.Name = "frequencySeries";
             this.frequencyChart.Series.Add(series2);
             this.frequencyChart.Size = new System.Drawing.Size(1179, 265);
             this.frequencyChart.TabIndex = 5;
             this.frequencyChart.Text = "frequencyChart";
+            //this.frequencyChart.SelectionRangeChanged += new System.EventHandler<System.Windows.Forms.DataVisualization.Charting.CursorEventArgs>(this.selectionFreq);
+            // 
+            // contextMenuStrip2
+            // 
+            this.contextMenuStrip2.ImageScalingSize = new System.Drawing.Size(24, 24);
+            this.contextMenuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.filterToolStripMenuItem});
+            this.contextMenuStrip2.Name = "contextMenuStrip2";
+            this.contextMenuStrip2.Size = new System.Drawing.Size(123, 36);
+            // 
+            // filterToolStripMenuItem
+            // 
+            this.filterToolStripMenuItem.Name = "filterToolStripMenuItem";
+            this.filterToolStripMenuItem.Size = new System.Drawing.Size(122, 32);
+            this.filterToolStripMenuItem.Text = "Filter";
+            this.filterToolStripMenuItem.Click += new System.EventHandler(this.FilterToolStripMenuItem_Click);
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(1063, 159);
+            this.button3.Location = new System.Drawing.Point(1063, 167);
             this.button3.Margin = new System.Windows.Forms.Padding(2);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(172, 36);
+            this.button3.Size = new System.Drawing.Size(172, 33);
             this.button3.TabIndex = 6;
             this.button3.Text = "DFT";
             this.button3.UseVisualStyleBackColor = true;
@@ -312,10 +338,10 @@ namespace waveEditerVersion1
             // 
             // PlayWav
             // 
-            this.PlayWav.Location = new System.Drawing.Point(1063, 257);
+            this.PlayWav.Location = new System.Drawing.Point(1064, 280);
             this.PlayWav.Margin = new System.Windows.Forms.Padding(2);
             this.PlayWav.Name = "PlayWav";
-            this.PlayWav.Size = new System.Drawing.Size(172, 37);
+            this.PlayWav.Size = new System.Drawing.Size(172, 33);
             this.PlayWav.TabIndex = 11;
             this.PlayWav.Text = "Play";
             this.PlayWav.UseVisualStyleBackColor = true;
@@ -365,11 +391,22 @@ namespace waveEditerVersion1
             this.label2.TabIndex = 17;
             this.label2.Text = "Low-pass (Hz)";
             // 
+            // inverseDFT
+            // 
+            this.inverseDFT.Location = new System.Drawing.Point(1062, 205);
+            this.inverseDFT.Name = "inverseDFT";
+            this.inverseDFT.Size = new System.Drawing.Size(173, 33);
+            this.inverseDFT.TabIndex = 18;
+            this.inverseDFT.Text = "Inverse DFT";
+            this.inverseDFT.UseVisualStyleBackColor = true;
+            this.inverseDFT.Click += new System.EventHandler(this.InverseDFT_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1303, 621);
+            this.ClientSize = new System.Drawing.Size(1303, 640);
+            this.Controls.Add(this.inverseDFT);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.LowPassValue);
@@ -394,6 +431,7 @@ namespace waveEditerVersion1
             ((System.ComponentModel.ISupportInitialize)(this.waveChart)).EndInit();
             this.contextMenuStrip1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.frequencyChart)).EndInit();
+            this.contextMenuStrip2.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.RecordGroup.ResumeLayout(false);
@@ -432,6 +470,9 @@ namespace waveEditerVersion1
         private TextBox LowPassValue;
         private Label label1;
         private Label label2;
+        private Button inverseDFT;
+        private ContextMenuStrip contextMenuStrip2;
+        private ToolStripMenuItem filterToolStripMenuItem;
     }
 }
 
