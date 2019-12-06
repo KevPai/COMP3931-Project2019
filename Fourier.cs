@@ -28,40 +28,6 @@ namespace Wave
             return A;
         }
     }
-    class Filter
-    {
-        public double[] applyFilter(double high, double low, double[] f)
-        {
-            double[] ff = f;
-            int nyquist = (ff.Length / 2);
-
-            if (high > 0)
-            {
-                for (int i = 0; i < nyquist; i++)
-                {
-                    if (i < high)
-                    {
-                        ff[i] *= 0;
-                        ff[(ff.Length - 1 - i)] *= 0;
-                    }
-                }
-            }
-
-            if (low > 0)
-            {
-                for (int i = 0; i < nyquist; i++)
-                {
-                    if (i > low)
-                    {
-                        ff[i] *= 0;
-                        ff[(ff.Length - 1 - i)] *= 0;
-                    }
-                }
-            }
-
-            return ff;
-        }
-    }
 }
 
 

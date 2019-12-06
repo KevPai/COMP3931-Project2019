@@ -12,7 +12,6 @@ using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using WaveFile;
 using static Wave.Fourier;
-using Wave;
 
 
 namespace waveEditerVersion1
@@ -20,23 +19,25 @@ namespace waveEditerVersion1
     public partial class Form1 : Form
 
     {
-        double[] samples, selectedSamples, fourierAmp;
-        int selectedRange, selectStart, selectEnd;
+        double[] samples, selectedSamples;
+        int selectedRange = 0, selectStart, selectEnd;
         byte[] signalData;
         byte[] bData;
-        double windowing = 1.0;
         int sampleStart = 0, sampleEnd = 0, sampleRange = 0;
         bool selected = false;
         Wave.Fourier fourier = new Wave.Fourier();
-        Wave.Filter filter = new Wave.Filter();
         double volumeVal = 1.0;
 
         Wav wav;
+
+
+
 
         public Form1()
         {
             InitializeComponent();
         }
+
 
         public void readWaveFile()
         {
@@ -50,11 +51,12 @@ namespace waveEditerVersion1
 
             if (fileDialog.ShowDialog() == DialogResult.OK)
             {
-
+                
                 byte[] wavData = File.ReadAllBytes(fileDialog.FileName);
                 byte[] wavHeader = new List<byte>(wavData).GetRange(0, 44).ToArray();
                 wav = new WaveFile.Wav(wavHeader);
                 wavData = new List<byte>(wavData).GetRange(44, wavData.Length - 44).ToArray();
+
 
                 Debug.WriteLine("\nOpening File:"
                     + "\nChunk ID:        " + wav.RIFFChunkID
@@ -72,7 +74,7 @@ namespace waveEditerVersion1
                     + "\nData Chunk Size: " + wav.dataChunkSize);
                 signalData = new byte[wavData.Length];
                 signalData = wavData;
-       
+                
                 generateWavSample(wavData);
             }
         }
@@ -89,7 +91,6 @@ namespace waveEditerVersion1
                 wave.Save(saveDialog.FileName);
             }
         }
-
         public void generateWavSample(byte[] data)
         {
             samples = new double[(int)wav.dataChunkSize / wav.blockAlign];
@@ -105,7 +106,6 @@ namespace waveEditerVersion1
 
         public void copy()
         {
-
             selectedSamples = new double[selectedRange];
             selectedSamples = new List<double>(samples).GetRange(selectStart, selectedRange).ToArray();
 
@@ -115,7 +115,6 @@ namespace waveEditerVersion1
 
             plotSample(samples.Length);
         }
-
         public void cut()
         {
             if (!selected)
@@ -195,8 +194,8 @@ namespace waveEditerVersion1
                 chartArea.AxisX.ScrollBar.ButtonStyle = ScrollBarButtonStyles.SmallScroll;
                 chartArea.AxisX.ScrollBar.ButtonColor = Color.Black;
             }
-            waveChart.MouseWheel += chart1_MouseWheel;
 
+            waveChart.MouseWheel += chart1_MouseWheel;
             //else
             //{
             //    sampleRange = sampleEnd - sampleStart;
@@ -216,88 +215,24 @@ namespace waveEditerVersion1
             //    chartArea.AxisX.ScrollBar.ButtonColor = Color.Black;
             //}
         }
-
-        public void saveAsWav()
-        {
-            if (wav == null)
-                return;
-            short[] toShort = samples.Select(e => (short)(e)).ToArray();
-            byte[] data = toShort.Select(e => Convert.ToInt16(e))
-                .SelectMany(e => BitConverter.GetBytes(e)).ToArray();
-            byte[] header = new byte[44];
-
-            Buffer.BlockCopy(wav.RIFFChunkID.ToCharArray(), 0, header, 0, 4);
-            Buffer.BlockCopy(BitConverter.GetBytes(wav.RIFFChuckSize), 0, header, 4, 4);
-            Buffer.BlockCopy(wav.format.ToCharArray(), 0, header, 8, 4);
-            Buffer.BlockCopy(wav.fmtChuckID.ToCharArray(), 0, header, 12, 4);
-            Buffer.BlockCopy(BitConverter.GetBytes(wav.fmtChunkSize), 0, header, 16, 4);
-            Buffer.BlockCopy(BitConverter.GetBytes(wav.audioFormat), 0, header, 20, 2);
-            Buffer.BlockCopy(BitConverter.GetBytes(wav.numChannels), 0, header, 22, 2);
-            Buffer.BlockCopy(BitConverter.GetBytes(wav.sampleRate), 0, header, 24, 4);
-            Buffer.BlockCopy(BitConverter.GetBytes(wav.byteRate), 0, header, 28, 4);
-            Buffer.BlockCopy(BitConverter.GetBytes(wav.blockAlign), 0, header, 32, 2);
-            Buffer.BlockCopy(BitConverter.GetBytes(wav.bitsPerSample), 0, header, 34, 2);
-            Buffer.BlockCopy(wav.dataChunkID.ToCharArray(), 0, header, 36, 4);
-            Buffer.BlockCopy(BitConverter.GetBytes(wav.dataChunkSize), 0, header, 40, 4);
-
-            SaveFileDialog saveDialog = new SaveFileDialog();
-            saveDialog.Filter = "WAV|*.wav";
-            if (saveDialog.ShowDialog() == DialogResult.OK)
-            {
-                using (Stream s = File.Open(saveDialog.FileName, FileMode.CreateNew))
-                {
-                    using (BinaryWriter bw = new BinaryWriter(s))
-                    {
-                        bw.Write(header);
-                        bw.Write(data);
-                    }
-                }
-            }
-        }
+       
 
         private void ApplyDFT()
         {
             Series frequencySeries = frequencyChart.Series["frequencySeries"];
-
-            frequencySeries.Points.Clear();
-
-            if (!selected)
-            {
-                return;
-            }
-            fourierAmp = fourier.DFT(selectedSamples);
-
-            int N = fourierAmp.Length;
+            double[] Amp = fourier.DFT(samples);
+            int N = Amp.Length;
             for (int f = 0; f < N; f++)
             {
-                frequencySeries.Points.AddXY(f, fourierAmp[f]);
+                frequencySeries.Points.AddXY(f, Amp[f]);
             }
         }
 
-        private void ApplyFilter()
-        {
-            Series frequencySeries = frequencyChart.Series["frequencySeries"];
-            frequencySeries.Points.Clear();
-
-            if (fourierAmp == null)
-            {
-                return;
-            }
-
-            fourierAmp = filter.applyFilter(double.Parse(HighPassValue.Text), double.Parse(LowPassValue.Text), fourierAmp);
-            for (int f = 0; f < fourierAmp.Length; f++)
-            {
-                frequencySeries.Points.AddXY(f, fourierAmp[f]);
-            }
-
-        }
-		
         public void StartRecord()
         {
             Debug.WriteLine(OpenDialog() ? "open rec succeeded" : "open rec failed");
-            Debug.WriteLine(StartRec(16, 22050) ? "start rec succeeded" : "start rec failed");
+            Debug.WriteLine(StartRec(16, 11025) ? "start rec succeeded" : "start rec failed");
         }
-        
         public void StopRecord()
         {
             RecordData recordData = StopRec();
@@ -319,7 +254,6 @@ namespace waveEditerVersion1
 
             plotSample(samples.Length);
         }
-
         public void PlayRecord()
         {
             //byte[] data = null;
@@ -354,9 +288,7 @@ namespace waveEditerVersion1
 
             IntPtr iptr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(byte)) * bData.Length);
             Marshal.Copy(bData, 0, iptr, bData.Length);
-
             Debug.WriteLine(PlayStart(iptr, bData.Length, 16, 11025) ?
-
                 "play start succeeded" : "play start failed");
             Marshal.FreeHGlobal(iptr);
         }
@@ -367,12 +299,10 @@ namespace waveEditerVersion1
             OpenDialog();
             IntPtr iptr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(byte)) * signalData.Length);
             Marshal.Copy(signalData, 0, iptr, signalData.Length);
-
             Debug.WriteLine(PlayStart(iptr, signalData.Length, 16, 11025) ?
                 "play start succeeded" : "play start failed");
             Marshal.FreeHGlobal(iptr);
         }
-
         //void selectSamples(object sender, CursorEventArgs e)
         //{
         //    if (samples == null)
@@ -455,6 +385,8 @@ namespace waveEditerVersion1
             }
             catch { }
         }
+
+
 
 
         [DllImport("Record.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
@@ -542,7 +474,6 @@ namespace waveEditerVersion1
             paste();
         }
 
-
         private void CopyToolStripMenuItem_Click(object sender, EventArgs e)
         {
             copy();
@@ -567,15 +498,6 @@ namespace waveEditerVersion1
             applyWindowing(2, selectedRange, selectStart);
             plotSample(samples.Length);
         }
-        private void filterButton_Click(object sender, EventArgs e)
-        {
-            Debug.WriteLine("Highpass is: " + HighPassValue.Text);
-            Debug.WriteLine("Lowpass is: " + LowPassValue.Text);
-
-            ApplyFilter();
-        }
-
-
 
         private void Button4_Click_2(object sender, EventArgs e)
         {
