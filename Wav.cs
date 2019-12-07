@@ -40,11 +40,11 @@ namespace WaveFile
         public uint dataChunkSize;
 
 
-        public Wav(string rci, uint rcs, string fmt, 
+        public Wav(string rci, uint rcs, string fmt,
                           string fci, uint fcs, uint af, uint nc, uint sr, uint br, uint ba, uint bps,
-                          string dci, uint dcs )
+                          string dci, uint dcs)
         {
-     
+
             RIFFChunkID = rci;
             RIFFChuckSize = rcs;
             format = fmt;
@@ -270,7 +270,7 @@ namespace WaveFile
 
             // Fill the data array with sample data
 
-            
+
             // Number of samples = sample rate * channels * bytes per sample
             uint numSamples = format.dwSamplesPerSec * format.wChannels;
 
@@ -284,7 +284,7 @@ namespace WaveFile
 
             // Calculate data chunk size in bytes
             data.dwChunkSize = (uint)(data.byteArray.Length * (format.wBitsPerSample / 8));
-            
+
 
 
         }
@@ -328,7 +328,7 @@ namespace WaveFile
             fileStream.Close();
         }
     }
-    
 
-    
- }
+
+
+}
