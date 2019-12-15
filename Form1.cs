@@ -11,52 +11,41 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using WaveFile;
-using static Wave.Fourier;
-
+using Wave;
 
 namespace waveEditerVersion1
 {
     public partial class Form1 : Form
 
     {
-        double[] samples, selectedSamples;
-        int selectedRange = 0, selectStart, selectEnd;
+        double[] samples, selectedSamples, selectedFourier, fourierAmp;
+        int selectedRange, selectStart, selectEnd;
+        int fourierRange, startFourier, endFourier;
         byte[] signalData;
         byte[] bData;
         int sampleStart = 0, sampleEnd = 0, sampleRange = 0;
         bool selected = false;
+        bool selectFourier = false;
         Wave.Fourier fourier = new Wave.Fourier();
         double volumeVal = 1.0;
-
         Wav wav;
-
-
-
 
         public Form1()
         {
             InitializeComponent();
         }
 
-
         public void readWaveFile()
         {
-            //OpenFileDialog fileDialog = new OpenFileDialog();
-            //if (fileDialog.ShowDialog() == DialogResult.OK)
-            //{
-            //    samples = Array.ConvertAll(WaveFile.Wav.readWav(fileDialog.FileName), e => (double) e);
-            //    plotSample(samples.Length);
-            //}
             OpenFileDialog fileDialog = new OpenFileDialog();
 
             if (fileDialog.ShowDialog() == DialogResult.OK)
             {
-                
+
                 byte[] wavData = File.ReadAllBytes(fileDialog.FileName);
                 byte[] wavHeader = new List<byte>(wavData).GetRange(0, 44).ToArray();
                 wav = new WaveFile.Wav(wavHeader);
                 wavData = new List<byte>(wavData).GetRange(44, wavData.Length - 44).ToArray();
-
 
                 Debug.WriteLine("\nOpening File:"
                     + "\nChunk ID:        " + wav.RIFFChunkID
@@ -74,11 +63,9 @@ namespace waveEditerVersion1
                     + "\nData Chunk Size: " + wav.dataChunkSize);
                 signalData = new byte[wavData.Length];
                 signalData = wavData;
-                
                 generateWavSample(wavData);
             }
         }
-
         public void saveAsWav()
         {
             if (wav == null)
@@ -115,6 +102,7 @@ namespace waveEditerVersion1
 
             plotSample(samples.Length);
         }
+
         public void cut()
         {
             if (!selected)
@@ -134,7 +122,6 @@ namespace waveEditerVersion1
             short[] toShort = samples.Select(element => (short)(element)).ToArray();
             signalData = toShort.Select(element => Convert.ToInt16(element))
             .SelectMany(element => BitConverter.GetBytes(element)).ToArray();
-
 
             plotSample(samples.Length);
         }
@@ -167,7 +154,6 @@ namespace waveEditerVersion1
             double miny = 5;
             double maxy = -5;
 
-            //if (!selected)
             if (samples != null)
             {
                 for (int i = 0; i < length; i++)
@@ -186,8 +172,6 @@ namespace waveEditerVersion1
                 ChartArea chartArea = waveChart.ChartAreas[waveChart.Series["waveSeries"].ChartArea];
                 chartArea.AxisX.Minimum = 0;
                 chartArea.AxisX.Maximum = length;
-                //chartArea.AxisX.ScaleView.Zoomable = true;
-                //chartArea.AxisX.ScaleView.Zoom(0, 100);
                 chartArea.AxisY.Minimum = miny;
                 chartArea.AxisY.Maximum = maxy;
                 chartArea.AxisX.ScaleView.SizeType = DateTimeIntervalType.Number;
@@ -196,36 +180,59 @@ namespace waveEditerVersion1
             }
 
             waveChart.MouseWheel += chart1_MouseWheel;
-            //else
-            //{
-            //    sampleRange = sampleEnd - sampleStart;
-            //    for (int i = 0; i < sampleRange; i++)
-            //    {
-            //        waveChart.Series["waveSeries"].Points.AddXY(sampleStart+i, samples[sampleStart + i]);
-            //    }
-            //    ChartArea chartArea = waveChart.ChartAreas[waveChart.Series["waveSeries"].ChartArea];
-            //    chartArea.AxisX.Minimum = sampleStart;
-            //    chartArea.AxisX.Maximum = sampleEnd;
-            //    chartArea.AxisX.ScaleView.Zoomable = true;
-            //    chartArea.AxisX.ScaleView.Zoom(sampleStart, sampleRange);
-            //    chartArea.AxisY.Minimum = -4;
-            //    chartArea.AxisY.Maximum = 4;
-            //    chartArea.AxisX.ScaleView.SizeType = DateTimeIntervalType.Number;
-            //    chartArea.AxisX.ScrollBar.ButtonStyle = ScrollBarButtonStyles.SmallScroll;
-            //    chartArea.AxisX.ScrollBar.ButtonColor = Color.Black;
-            //}
+
         }
-       
 
         private void ApplyDFT()
         {
             Series frequencySeries = frequencyChart.Series["frequencySeries"];
-            double[] Amp = fourier.DFT(samples);
-            int N = Amp.Length;
+            frequencySeries.Points.Clear();
+
+            if (!selected)
+            {
+                return;
+            }
+            fourierAmp = fourier.DFT(selectedSamples);
+
+            int N = fourierAmp.Length;
             for (int f = 0; f < N; f++)
             {
-                frequencySeries.Points.AddXY(f, Amp[f]);
+                frequencySeries.Points.AddXY(f, fourierAmp[f]);
             }
+        }
+
+        private void ApplyInverse()
+        {
+            if (fourierAmp == null)
+            {
+                return;
+            }
+
+            samples = fourier.inverseDFT(fourierAmp);
+            plotSample(samples.Length);
+
+            short[] toShort = samples.Select(element => (short)(element)).ToArray();
+            signalData = toShort.Select(element => Convert.ToInt16(element))
+            .SelectMany(element => BitConverter.GetBytes(element)).ToArray();
+        }
+
+        private void ApplyFilter()
+        {
+            Series frequencySeries = frequencyChart.Series["frequencySeries"];
+            frequencySeries.Points.Clear();
+
+            if (fourierAmp == null)
+            {
+                return;
+            }
+
+            fourierAmp = fourier.applyFilter(startFourier, endFourier, fourierAmp);
+            for (int f = 0; f < fourierAmp.Length; f++)
+            {
+                frequencySeries.Points.AddXY(f, fourierAmp[f]);
+            }
+
+            ApplyInverse();
         }
 
         public void StartRecord()
@@ -233,6 +240,7 @@ namespace waveEditerVersion1
             Debug.WriteLine(OpenDialog() ? "open rec succeeded" : "open rec failed");
             Debug.WriteLine(StartRec(16, 11025) ? "start rec succeeded" : "start rec failed");
         }
+
         public void StopRecord()
         {
             RecordData recordData = StopRec();
@@ -254,12 +262,9 @@ namespace waveEditerVersion1
 
             plotSample(samples.Length);
         }
+
         public void PlayRecord()
         {
-            //byte[] data = null;
-            //data = samples.Select(x => (short)(x)).ToArray()
-            //        .Select(x => Convert.ToInt16(x))
-            //        .SelectMany(x => BitConverter.GetBytes(x)).ToArray();
             if (volumeVal != 1)
             {
 
@@ -281,7 +286,6 @@ namespace waveEditerVersion1
                     }
                     bData[i] = (byte)temp;
 
-
                 }
                 Debug.WriteLine(bData[5000]);
             }
@@ -295,7 +299,6 @@ namespace waveEditerVersion1
 
         void playWavSignal()
         {
-            // make sure not to opendialog twice. do an if statement check later.
             OpenDialog();
             IntPtr iptr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(byte)) * signalData.Length);
             Marshal.Copy(signalData, 0, iptr, signalData.Length);
@@ -303,16 +306,7 @@ namespace waveEditerVersion1
                 "play start succeeded" : "play start failed");
             Marshal.FreeHGlobal(iptr);
         }
-        //void selectSamples(object sender, CursorEventArgs e)
-        //{
-        //    if (samples == null)
-        //    {
-        //        return;
-        //    }
-        //    selectStart = (int)e.NewSelectionStart;
-        //    selectEnd = (int)e.NewSelectionEnd;
-        //    selectedRange = Math.Abs(selectStart - selectEnd);
-        //}
+
         private void selectionSignal(object sender, CursorEventArgs e)
         {
             if (samples == null)
@@ -322,6 +316,7 @@ namespace waveEditerVersion1
             selected = true;
             selectStart = (int)e.NewSelectionStart;
             selectEnd = (int)e.NewSelectionEnd;
+
             if (selectStart > selectEnd)
             {
                 int temp = selectEnd;
@@ -329,13 +324,13 @@ namespace waveEditerVersion1
                 selectStart = temp;
             }
             selectedRange = Math.Abs(selectEnd - selectStart);
+
             return;
         }
 
         private void applyWindowing(int w, int N, int start)
         {
-            Debug.WriteLine(N);
-            Debug.WriteLine(start);
+            
             double[] window = new double[N];
             switch (w)
             {
@@ -343,21 +338,44 @@ namespace waveEditerVersion1
                     for (int i = 0; i < N; i++)
                     {
                         window[i] = 1.0 - Math.Abs((i - N / 2.0) / N / 2.0);
-                        Debug.WriteLine(window[i]);
                     }
                     break;
                 case 2:
                     for (int i = 0; i < N; i++)
                     {
                         window[i] = 1.0 - Math.Pow(Math.Abs((i - N / 2.0) / N / 2.0), 2);
-                       
+
                     }
                     break;
             }
             for (int i = 0; i < N; i++)
+                {
+                    samples[start + i] = samples[start + i] * window[i];
+                }
+        }
+
+        private void selectionFreq(object sender, CursorEventArgs a)
+        {
+            if (fourierAmp == null)
             {
-                samples[start + i] = samples[start + i] * window[i];
+                return;
             }
+            selectFourier = true;
+            startFourier = (int)a.NewSelectionStart;
+            endFourier = (int)a.NewSelectionEnd;
+            if (startFourier > endFourier)
+            {
+                int temp = endFourier;
+                endFourier = startFourier;
+                startFourier = temp;
+            }
+            fourierRange = Math.Abs(endFourier - startFourier);
+
+            selectedFourier = new double[fourierRange];
+            selectedFourier = new List<double>(fourierAmp).GetRange((int)a.NewSelectionStart, fourierRange).ToArray();
+
+
+            return;
         }
 
         private void chart1_MouseWheel(object sender, MouseEventArgs e)
@@ -385,9 +403,6 @@ namespace waveEditerVersion1
             }
             catch { }
         }
-
-
-
 
         [DllImport("Record.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool OpenDialog();
@@ -474,9 +489,24 @@ namespace waveEditerVersion1
             paste();
         }
 
+        private void filterButton_Click(object sender, EventArgs e)
+        {
+            ApplyFilter();
+        }
+
+        private void InverseDFT_Click(object sender, EventArgs e)
+        {
+            ApplyInverse();
+        }
+
         private void CopyToolStripMenuItem_Click(object sender, EventArgs e)
         {
             copy();
+        }
+
+        private void FilterToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ApplyFilter();
         }
 
         private void TriangularToolStripMenuItem_Click(object sender, EventArgs e)
@@ -524,9 +554,7 @@ namespace waveEditerVersion1
 
         private void Button1_Click(object sender, EventArgs e)
         {
-            plotSample(300);
+    
         }
     }
-
-
 }
